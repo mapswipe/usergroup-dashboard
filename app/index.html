@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <title><%= process.env.MY_APP_NAME %></title>
+        <meta charset="utf-8" />
+        <style>
+            html, body {
+                position: relative;
+                margin: 0;
+                padding: 0;
+                font-family: var(--dui-font-family-sans-serif), sans-serif;
+            }
+
+            * {
+                box-sizing: border-box;
+                scrollbar-color: var(--dui-color-foreground-scrollbar) var(--dui-color-background-scrollbar);
+                scrollbar-width: thin;
+            }
+
+            ::-webkit-scrollbar {
+                background-color: var(--dui-color-background-scrollbar);
+                width: var(--dui-width-scrollbar);
+                height: var(--dui-width-scrollbar);
+                background-color: var(--dui-color-background-scrollbar);
+            }
+
+            ::-webkit-scrollbar-track {
+                background-color: var(--dui-color-background-scrollbar);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                border-radius: var(--dui-radius-scrollbar-border);
+                background-color: var(--dui-color-foreground-scrollbar);
+            }
+        </style>
+    </head>
+
+    <body>
+        <noscript>
+            <%= process.env.MY_APP_NAME %> needs JS.
+        </noscript>
+
+        <script>
+            window.standaloneMode = true;
+        </script>
+        <div id="app-container"></div>
+        <!--
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+        -->
+    </body>
+</html>
