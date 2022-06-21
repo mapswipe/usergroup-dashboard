@@ -1,6 +1,7 @@
 import {
     BrowserOptions,
 } from '@sentry/react';
+
 const appCommitHash = process.env.REACT_APP_COMMITHASH;
 const appName = process.env.MY_APP_ID;
 

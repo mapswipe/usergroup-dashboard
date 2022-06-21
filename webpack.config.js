@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { HotModuleReplacementPlugin, EnvironmentPlugin } = require('webpack');
+const { EnvironmentPlugin } = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 // const WebpackPwaManifest = require('webpack-pwa-manifest');
@@ -179,10 +179,11 @@ module.exports = () => {
                 files: ['**/*.css'],
                 context: getPath('app/'),
             }),
-            new ESLintPlugin({
-                extensions: ['.js', '.jsx', '.ts', '.tsx'],
-                reportUnusedDisableDirectives: 'warn',
-            }),
+            // new ESLintPlugin({
+            //     context: getPath('app/'),
+            //     extensions: ['js', 'jsx', 'ts', 'tsx'],
+            //     exclude: 'node_modules',
+            // }),
         ],
     };
 
@@ -266,21 +267,17 @@ module.exports = () => {
             */
             devServer: {
                 host: '0.0.0.0',
-                port: 3080,
-                overlay: true,
                 hot: true,
+                port: 3080,
                 liveReload: false,
                 historyApiFallback: true,
-                watchContentBase: true,
-                watchOptions: {
-                    ignored: /node_modules/,
+                client: {
+                    logging: 'verbose',
+                    overlay: true,
+                    progress: true,
                 },
-
-                clientLogLevel: 'none',
-                publicPath: '/',
             },
             plugins: [
-                new HotModuleReplacementPlugin(),
                 new ReactRefreshWebpackPlugin(),
             ],
             /*

@@ -9,7 +9,6 @@ const config = {
         browser: true,
     },
     plugins: [
-        'graphql',
         '@typescript-eslint',
         'postcss-modules',
     ],
@@ -111,13 +110,21 @@ const config = {
     },
     'overrides': [
         {
+            'files': ['*.js', '*.jsx', '*.ts', '*.tsx'],
+            'processor': '@graphql-eslint/graphql'
+        },
+        {
             'files': ['*.graphql'],
             'parser': '@graphql-eslint/eslint-plugin',
             'plugins': ['@graphql-eslint'],
             'rules': {
                 '@graphql-eslint/known-type-names': 'error'
-            }
-        }
+            },
+             'parserOptions': {
+                 'operations': './app/**/*.graphql',
+                 'schema': './schema.graphql'
+             },
+        },
     ],
 };
 try {

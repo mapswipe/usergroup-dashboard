@@ -5,12 +5,6 @@ import {
     caseInsensitiveSubmatch,
     compareStringSearch,
 } from '@togglecorp/fujs';
-import {
-    formatNumberRaw,
-    getAutoPrecision,
-} from '#components/Numeral';
-
-const standaloneMode = (window as { standaloneMode?: boolean }).standaloneMode ?? false;
 
 export function rankedSearchOnList<T>(
     list: T[],
