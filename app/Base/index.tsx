@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { listToMap } from '@togglecorp/fujs';
 import { init, ErrorBoundary } from '@sentry/react';
 import { ApolloClient, ApolloProvider } from '@apollo/client';
 
@@ -7,15 +8,59 @@ import '@the-deep/deep-ui/build/esm/index.css';
 import PreloadMessage from '#base/components/PreloadMessage';
 import sentryConfig from '#base/configs/sentry';
 import apolloConfig from '#base/configs/apollo';
+import UserGroupsStatistics from '#views/UserGroupsStatistics';
+import MemberStatistics from '#views/MemberStatitics';
+
 import styles from './styles.css';
 
 if (sentryConfig) {
     init(sentryConfig);
 }
+export function parseQueryString(value: string) {
+    const val = value.substring(1);
+    return listToMap(
+        val.split('&').map((token) => token.split('=')),
+        (item) => item[0],
+        (item) => item[1],
+    );
+}
+
+interface Win {
+    standaloneMode?: boolean;
+
+    page?: string;
+
+    // For country profile
+    iso3?: string;
+    countryName?: string;
+
+    // For good practices
+    id?: string;
+}
+
+const query: Win = parseQueryString(window.location.search);
+
+const currentPage = (window as Win).page || query.page;
 
 const apolloClient = new ApolloClient(apolloConfig);
 
 function Base() {
+    const page = useMemo(
+        () => {
+            if (currentPage === 'usergroup-dashboard') {
+                return (
+                    <UserGroupsStatistics className={styles.view} />
+                );
+            }
+            if (currentPage === 'member-dashboard') {
+                return (
+                    <MemberStatistics />
+                );
+            }
+            return null;
+        },
+        [],
+    );
     return (
         <div className={styles.base}>
             <ErrorBoundary
@@ -28,7 +73,7 @@ function Base() {
                 )}
             >
                 <ApolloProvider client={apolloClient}>
-                    <div className={styles.view}>UserGroup Dashboad</div>
+                    {page}
                 </ApolloProvider>
             </ErrorBoundary>
         </div>

@@ -179,6 +179,7 @@ module.exports = () => {
                 files: ['**/*.css'],
                 context: getPath('app/'),
             }),
+            // FIXME this plugin blocks build
             // new ESLintPlugin({
             //     context: getPath('app/'),
             //     extensions: ['js', 'jsx', 'ts', 'tsx'],

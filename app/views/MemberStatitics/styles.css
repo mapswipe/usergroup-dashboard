@@ -1,0 +1,19 @@
+.members-statistics {
+    display: flex;
+    flex-grow: 1;
+    background-color: unset;
+
+    .filters {
+        display: flex;
+        gap: var(--dui-spacing-large);
+        border: 1px solid red;
+
+        .search-input {
+            max-width: 10rem;
+        }
+    }
+
+    .table {
+        min-height: 20rem;
+    }
+}
