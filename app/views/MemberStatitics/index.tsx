@@ -5,6 +5,7 @@ import {
     Pager,
     TextInput,
     TableView,
+    TextOutput,
     createStringColumn,
     createNumberColumn,
 } from '@the-deep/deep-ui';
@@ -16,32 +17,44 @@ import {
     useQuery,
 } from '@apollo/client';
 import {
-    ProjectsQuery,
-    ProjectsQueryVariables,
+    UserGroupMemberQuery,
+    UserGroupMemberQueryVariables
 } from '#generated/types';
+
+import { secondsToDisplayTime } from '#utils/common';
 
 import styles from './styles.css';
 
-interface Member {
-    id: string;
-    name: string;
-    totalTime: number;
-    totalSwipes: number;
-    membersCount: number;
-}
+type Member = UserGroupMemberQuery['userGroups']['items'][number]['userMemberships']['items'][number];
 
 function memberKeySelector(member: Member) {
-    return member.id;
+    return member.user.userId;
 }
 
-const PROJECTS = gql`
-    query Projects {
-        projects {
+const USERGROUP_MEMBER = gql`
+    query UserGroupMember($userGroupId: String!) {
+        userGroups(filters: {userGroupId: {exact: $userGroupId}}) {
             count
             items {
+                description
                 name
-                projectId
-                status
+                stats {
+                    totalSwipe
+                    totalSwipeTime
+                }
+                userMemberships {
+                    count
+                    items {
+                        stats {
+                            totalSwipe
+                            totalSwipeTime
+                        }
+                        user {
+                            userId
+                            username
+                        }
+                    }
+                }
             }
         }
     }
@@ -49,11 +62,13 @@ const PROJECTS = gql`
 
 interface Props {
     className?: string;
+    userGroupId?: string;
 }
 
 function MemberStatistics(props: Props) {
     const {
         className,
+        userGroupId,
     } = props;
 
     const [activePage, setActivePage] = useState<number>(1);
@@ -61,12 +76,18 @@ function MemberStatistics(props: Props) {
     const [search, setSearch] = useState<string | undefined>(undefined);
 
     const {
-        data: projectsData,
-    } = useQuery<ProjectsQuery, ProjectsQueryVariables>(
-        PROJECTS,
+        data: memberData,
+    } = useQuery<UserGroupMemberQuery, UserGroupMemberQueryVariables>(
+        USERGROUP_MEMBER,
+        {
+            skip: !userGroupId,
+            variables: {
+                userGroupId: userGroupId as string,
+            },
+        },
     );
 
-    console.warn('data', projectsData);
+    console.info('data', memberData);
 
     const handleMaxItemsPerPageChange = useCallback((maxItems: number) => {
         setMaxItemsPerPage(maxItems);
@@ -82,39 +103,37 @@ function MemberStatistics(props: Props) {
         createStringColumn<Member, string>(
             'name',
             'Member Name',
-            (item) => item.name,
+            (item) => item.user.username,
         ),
         createStringColumn<Member, string>(
             'totalTime',
             'Total time spent swipping',
-            (item) => `${item.totalTime} hours`,
+            (item) => secondsToDisplayTime(item.stats.totalSwipeTime),
         ),
         createNumberColumn<Member, string>(
             'totalSwipes',
             'Total number of swipes',
-            (item) => item.totalSwipes,
-        ),
-        createNumberColumn<Member, string>(
-            'totalSwipes',
-            'Members',
-            (item) => item.membersCount,
+            (item) => item.stats.totalSwipe,
         ),
     ]), []);
+
+    const userGroup = memberData?.userGroups?.items?.[0];
 
     return (
         <Container
             className={_cs(styles.membersStatistics, className)}
-            footerActions={(
+            footerActions={userGroup && (
                 <Pager
                     activePage={activePage}
-                    itemsCount={100}
+                    itemsCount={userGroup.userMemberships.count}
                     maxItemsPerPage={maxItemsPerPage}
                     onItemsPerPageChange={handleMaxItemsPerPageChange}
                     onActivePageChange={setActivePage}
                 />
             )}
-            headerDescriptionClassName={styles.filters}
-            headerDescription={(
+            heading={userGroup?.name}
+            headerDescription={userGroup?.description}
+            headerActions={(
                 <TextInput
                     variant="general"
                     className={styles.searchInput}
@@ -127,9 +146,19 @@ function MemberStatistics(props: Props) {
                 />
             )}
         >
+            <div className={styles.groupStats}>
+                <TextOutput
+                    label="Number of Swipes"
+                    value={userGroup?.stats.totalSwipe}
+                />
+                <TextOutput
+                    label="Total Swipe Duration"
+                    value={secondsToDisplayTime(userGroup?.stats.totalSwipeTime ?? 0)}
+                />
+            </div>
             <TableView
                 className={styles.table}
-                data={[]}
+                data={userGroup?.userMemberships?.items}
                 keySelector={memberKeySelector}
                 emptyMessage="No members available."
                 columns={columns}

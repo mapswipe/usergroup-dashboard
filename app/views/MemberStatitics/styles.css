@@ -6,7 +6,6 @@
     .filters {
         display: flex;
         gap: var(--dui-spacing-large);
-        border: 1px solid red;
 
         .search-input {
             max-width: 10rem;

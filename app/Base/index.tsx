@@ -30,17 +30,14 @@ interface Win {
 
     page?: string;
 
-    // For country profile
-    iso3?: string;
-    countryName?: string;
-
-    // For good practices
-    id?: string;
+    // For member dashboard
+    userGroupId?: string;
 }
 
 const query: Win = parseQueryString(window.location.search);
 
 const currentPage = (window as Win).page || query.page;
+const userGroupId = (window as Win).userGroupId || query.userGroupId;
 
 const apolloClient = new ApolloClient(apolloConfig);
 
@@ -54,13 +51,21 @@ function Base() {
             }
             if (currentPage === 'member-dashboard') {
                 return (
-                    <MemberStatistics />
+                    <MemberStatistics userGroupId={userGroupId} />
                 );
             }
-            return null;
+
+            return (
+                <div>
+                    <a href="/?page=usergroup-dashboard">
+                        Usergroup Dashboard
+                    </a>
+                </div>
+            );
         },
         [],
     );
+
     return (
         <div className={styles.base}>
             <ErrorBoundary

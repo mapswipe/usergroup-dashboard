@@ -51,21 +51,18 @@ export function isValidNumber(value: unknown): value is number {
     return true;
 }
 
-export function formatNumber(value: number) {
-    const output = formatNumberRaw(
-        value,
-        ',',
-        true,
-        getAutoPrecision(value, 100, 2),
-        0,
-    );
-
-    if (!output) {
-        return '';
+export function secondsToDisplayTime(sec: number) {
+    if (sec < 3600) {
+        return 'Less than an hour';
     }
-    const {
-        value: number,
-        valueSuffix: normalizeSuffix = '',
-    } = output;
-    return `${number}${normalizeSuffix}`;
+
+    const hours = Math.floor(sec / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+
+    if (mins === 0) {
+        return `${hours} hours`;
+    }
+
+    return `${hours} hours, ${mins} mins`;
 }
+

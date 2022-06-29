@@ -7,24 +7,79 @@ import {
     TableView,
     createStringColumn,
     createNumberColumn,
+    TableHeaderCell,
+    TableColumn,
+    TableHeaderCellProps,
 } from '@the-deep/deep-ui';
 import {
     IoSearchSharp,
 } from 'react-icons/io5';
+import {
+    gql,
+    useQuery,
+} from '@apollo/client';
+
+import {
+    UserGroupListQuery,
+    UserGroupListQueryVariables,
+} from '#generated/types';
+import { secondsToDisplayTime } from '#utils/common';
 
 import styles from './styles.css';
 
-interface UserGroup {
-    id: string;
-    name: string;
-    totalTime: number;
-    totalSwipes: number;
-    membersCount: number;
-}
+const USERGROUP_LIST = gql`
+    query UserGroupList {
+        userGroups {
+            items {
+                name
+                stats {
+                    totalSwipe
+                    totalSwipeTime
+                }
+                userGroupId
+                userMemberships {
+                    count
+                }
+            }
+            count
+        }
+    }
+`;
+
+type UserGroup = UserGroupListQuery['userGroups']['items'][number];
 
 function userGroupKeySelector(userGroup: UserGroup) {
-    return userGroup.id;
+    return userGroup.userGroupId;
 }
+
+interface MemberProps {
+    userGroupId: string;
+    children: React.ReactNode;
+}
+
+function MemberLink({
+    userGroupId,
+    children,
+}: MemberProps) {
+    return (
+        <a href={`/?page=member-dashboard&userGroupId=${userGroupId}`}>
+            {children}
+        </a>
+    );
+}
+
+const titleColumn: TableColumn<UserGroup, string, MemberProps, TableHeaderCellProps> = {
+    id: 'name',
+    title: 'Group Name',
+    headerCellRenderer: TableHeaderCell,
+    headerCellRendererParams: {},
+    cellRenderer: MemberLink,
+    cellRendererParams: (_: string, item: UserGroup) => ({
+        children: item.name,
+        userGroupId: item.userGroupId,
+    }),
+};
+
 interface Props {
     className?: string;
 }
@@ -48,37 +103,39 @@ function UserGroupsStatistics(props: Props) {
         setActivePage(1);
     }, []);
 
+    const {
+        data: userGroupData,
+    } = useQuery<UserGroupListQuery, UserGroupListQueryVariables>(
+        USERGROUP_LIST,
+    );
+
     const columns = useMemo(() => ([
-        createStringColumn<UserGroup, string>(
-            'name',
-            'Group Name',
-            (item) => item.name,
-        ),
+        titleColumn,
         createStringColumn<UserGroup, string>(
             'totalTime',
             'Total time spent swipping',
-            (item) => `${item.totalTime} hours`,
+            (item) => secondsToDisplayTime(item.stats.totalSwipeTime),
         ),
         createNumberColumn<UserGroup, string>(
             'totalSwipes',
             'Total number of swipes',
-            (item) => item.totalSwipes,
+            (item) => item.stats.totalSwipe,
         ),
         createNumberColumn<UserGroup, string>(
-            'totalSwipes',
+            'membersCount',
             'Members',
-            (item) => item.membersCount,
+            (item) => item.userMemberships.count,
         ),
     ]), []);
 
     return (
         <Container
             className={_cs(styles.userGroupsStatistics, className)}
-            footerActions={(
+            footerActions={userGroupData && (
                 <Pager
                     className={styles.out}
                     activePage={activePage}
-                    itemsCount={100}
+                    itemsCount={userGroupData.userGroups.count}
                     maxItemsPerPage={maxItemsPerPage}
                     onItemsPerPageChange={handleMaxItemsPerPageChange}
                     onActivePageChange={setActivePage}
@@ -100,7 +157,7 @@ function UserGroupsStatistics(props: Props) {
         >
             <TableView
                 className={styles.table}
-                data={[]}
+                data={userGroupData?.userGroups?.items}
                 keySelector={userGroupKeySelector}
                 emptyMessage="No user groups available."
                 columns={columns}
