@@ -15,4 +15,12 @@
     .table {
         min-height: 20rem;
     }
+
+    .pager {
+        :global {
+            div[class^='styles_input__'] {
+                width: 8rem!important;
+            }
+        }
+    }
 }

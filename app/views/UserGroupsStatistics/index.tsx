@@ -133,7 +133,7 @@ function UserGroupsStatistics(props: Props) {
             className={_cs(styles.userGroupsStatistics, className)}
             footerActions={userGroupData && (
                 <Pager
-                    className={styles.out}
+                    className={styles.pager}
                     activePage={activePage}
                     itemsCount={userGroupData.userGroups.count}
                     maxItemsPerPage={maxItemsPerPage}

@@ -3,16 +3,30 @@
     flex-grow: 1;
     background-color: unset;
 
-    .filters {
-        display: flex;
-        gap: var(--dui-spacing-large);
+    .table {
+        min-height: 20rem;
+    }
 
-        .search-input {
-            max-width: 10rem;
+    .group-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        padding: 2rem 0;
+
+        .value {
+            font-size: 1.2rem;
+        }
+
+        .description {
+            font-size: 1rem;
         }
     }
 
-    .table {
-        min-height: 20rem;
+    .pager {
+        :global {
+            div[class^='styles_input__'] {
+                width: 8rem!important;
+            }
+        }
     }
 }

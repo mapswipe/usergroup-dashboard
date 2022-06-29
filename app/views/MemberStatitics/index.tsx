@@ -18,7 +18,7 @@ import {
 } from '@apollo/client';
 import {
     UserGroupMemberQuery,
-    UserGroupMemberQueryVariables
+    UserGroupMemberQueryVariables,
 } from '#generated/types';
 
 import { secondsToDisplayTime } from '#utils/common';
@@ -87,8 +87,6 @@ function MemberStatistics(props: Props) {
         },
     );
 
-    console.info('data', memberData);
-
     const handleMaxItemsPerPageChange = useCallback((maxItems: number) => {
         setMaxItemsPerPage(maxItems);
         setActivePage(1);
@@ -124,6 +122,7 @@ function MemberStatistics(props: Props) {
             className={_cs(styles.membersStatistics, className)}
             footerActions={userGroup && (
                 <Pager
+                    className={styles.pager}
                     activePage={activePage}
                     itemsCount={userGroup.userMemberships.count}
                     maxItemsPerPage={maxItemsPerPage}
@@ -148,11 +147,17 @@ function MemberStatistics(props: Props) {
         >
             <div className={styles.groupStats}>
                 <TextOutput
-                    label="Number of Swipes"
+                    valueContainerClassName={styles.value}
+                    descriptionContainerClassName={styles.description}
+                    block
+                    description="total swipes"
                     value={userGroup?.stats.totalSwipe}
                 />
                 <TextOutput
-                    label="Total Swipe Duration"
+                    valueContainerClassName={styles.value}
+                    descriptionContainerClassName={styles.description}
+                    block
+                    description="spent swiping"
                     value={secondsToDisplayTime(userGroup?.stats.totalSwipeTime ?? 0)}
                 />
             </div>
