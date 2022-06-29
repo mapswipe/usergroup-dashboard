@@ -20,7 +20,6 @@ import {
     UserGroupMemberQuery,
     UserGroupMemberQueryVariables,
 } from '#generated/types';
-
 import { secondsToDisplayTime } from '#utils/common';
 
 import styles from './styles.css';
@@ -32,7 +31,7 @@ function memberKeySelector(member: Member) {
 }
 
 const USERGROUP_MEMBER = gql`
-    query UserGroupMember($userGroupId: String!) {
+    query UserGroupMember($userGroupId: String!, $filters: UserMembershipFilter, $pagination: OffsetPaginationInput) {
         userGroups(filters: {userGroupId: {exact: $userGroupId}}) {
             count
             items {
@@ -42,7 +41,7 @@ const USERGROUP_MEMBER = gql`
                     totalSwipe
                     totalSwipeTime
                 }
-                userMemberships {
+                userMemberships(filters: $filters, pagination: $pagination) {
                     count
                     items {
                         stats {
@@ -83,6 +82,13 @@ function MemberStatistics(props: Props) {
             skip: !userGroupId,
             variables: {
                 userGroupId: userGroupId as string,
+                filters: {
+                    search,
+                },
+                pagination: {
+                    limit: maxItemsPerPage,
+                    offset: (activePage - 1) * maxItemsPerPage,
+                },
             },
         },
     );
@@ -135,9 +141,8 @@ function MemberStatistics(props: Props) {
             headerActions={(
                 <TextInput
                     variant="general"
-                    className={styles.searchInput}
                     icons={<IoSearchSharp />}
-                    placeholder="Search"
+                    placeholder="Search Member"
                     name={undefined}
                     value={search}
                     type="search"
@@ -145,7 +150,7 @@ function MemberStatistics(props: Props) {
                 />
             )}
         >
-            <div className={styles.groupStats}>
+            <div>
                 <TextOutput
                     valueContainerClassName={styles.value}
                     descriptionContainerClassName={styles.description}

@@ -28,8 +28,8 @@ import { secondsToDisplayTime } from '#utils/common';
 import styles from './styles.css';
 
 const USERGROUP_LIST = gql`
-    query UserGroupList {
-        userGroups {
+    query UserGroupList($filters: UserGroupFilter, $pagination: OffsetPaginationInput) {
+        userGroups(filters: $filters, pagination: $pagination) {
             items {
                 name
                 stats {
@@ -107,6 +107,17 @@ function UserGroupsStatistics(props: Props) {
         data: userGroupData,
     } = useQuery<UserGroupListQuery, UserGroupListQueryVariables>(
         USERGROUP_LIST,
+        {
+            variables: {
+                filters: {
+                    search,
+                },
+                pagination: {
+                    limit: maxItemsPerPage,
+                    offset: (activePage - 1) * maxItemsPerPage,
+                },
+            },
+        },
     );
 
     const columns = useMemo(() => ([
@@ -141,13 +152,12 @@ function UserGroupsStatistics(props: Props) {
                     onActivePageChange={setActivePage}
                 />
             )}
-            headerDescriptionClassName={styles.filters}
-            headerDescription={(
+            headerActionsContainerClassName={styles.filters}
+            headerActions={(
                 <TextInput
                     variant="general"
-                    className={styles.searchInput}
                     icons={<IoSearchSharp />}
-                    placeholder="Search"
+                    placeholder="Search Usergroup"
                     name={undefined}
                     value={search}
                     type="search"

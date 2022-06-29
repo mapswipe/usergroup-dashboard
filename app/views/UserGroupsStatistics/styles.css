@@ -6,10 +6,6 @@
     .filters {
         display: flex;
         gap: var(--dui-spacing-large);
-
-        .search-input {
-            max-width: 10rem;
-        }
     }
 
     .table {

@@ -65,4 +65,3 @@ export function secondsToDisplayTime(sec: number) {
 
     return `${hours} hours, ${mins} mins`;
 }
-
