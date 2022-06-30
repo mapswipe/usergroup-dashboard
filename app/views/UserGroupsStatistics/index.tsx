@@ -23,7 +23,10 @@ import {
     UserGroupListQuery,
     UserGroupListQueryVariables,
 } from '#generated/types';
-import { secondsToDisplayTime } from '#utils/common';
+import {
+    secondsToDisplayTime,
+    getMemberDashboardPageLink,
+} from '#utils/common';
 
 import styles from './styles.css';
 
@@ -62,7 +65,7 @@ function MemberLink({
     children,
 }: MemberProps) {
     return (
-        <a href={`/?page=member-dashboard&userGroupId=${userGroupId}`}>
+        <a href={getMemberDashboardPageLink(userGroupId)}>
             {children}
         </a>
     );

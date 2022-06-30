@@ -11,6 +11,11 @@ import apolloConfig from '#base/configs/apollo';
 import UserGroupsStatistics from '#views/UserGroupsStatistics';
 import MemberStatistics from '#views/MemberStatitics';
 
+import {
+    standaloneMode,
+    getUsergroupDashboardPageLink,
+} from '#utils/common';
+
 import styles from './styles.css';
 
 if (sentryConfig) {
@@ -55,13 +60,16 @@ function Base() {
                 );
             }
 
-            return (
-                <div>
-                    <a href="/?page=usergroup-dashboard">
-                        Usergroup Dashboard
-                    </a>
-                </div>
-            );
+            if (standaloneMode) {
+                return (
+                    <div>
+                        <a href={getUsergroupDashboardPageLink()}>
+                            Usergroup Dashboard
+                        </a>
+                    </div>
+                );
+            }
+            return null;
         },
         [],
     );

@@ -5,5 +5,5 @@ import Base from './Base';
 // NOTE: let's enable strict mode
 ReactDom.render(
     <Base />,
-    document.getElementById('app-container'),
+    document.getElementById('mapswipe-user-group-container'),
 );

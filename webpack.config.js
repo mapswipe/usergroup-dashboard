@@ -180,9 +180,9 @@ module.exports = () => {
                 context: getPath('app/'),
             }),
             // FIXME this plugin blocks build
-            new ESLintPlugin({
-                extensions: ['.js', '.jsx', '.ts', '.tsx'],
-            }),
+            // new ESLintPlugin({
+            //     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            // }),
         ],
     };
 

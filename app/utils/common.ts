@@ -65,3 +65,19 @@ export function secondsToDisplayTime(sec: number) {
 
     return `${hours} hours, ${mins} mins`;
 }
+
+export const standaloneMode = (window as { standaloneMode?: boolean }).standaloneMode ?? false;
+
+export function getUsergroupDashboardPageLink() {
+    // NOTE: we need to also add countryName on standaloneMode url
+    return standaloneMode
+        ? '/?page=usergroup-dashboard'
+        : '/en/user-groups.html';
+}
+
+export function getMemberDashboardPageLink(id: string) {
+    // NOTE: we need to also add countryName on standaloneMode url
+    return standaloneMode
+        ? `/?page=member-dashboard&userGroupId=${id}`
+        : `/en/user-group.html?userGroupId=${id}`;
+}
